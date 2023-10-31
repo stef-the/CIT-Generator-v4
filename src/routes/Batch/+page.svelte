@@ -2,6 +2,8 @@
 	// @ts-nocheck
 	import { exclude_internal_props } from 'svelte/internal';
 	import duplicates from '../../data/duplicates.json';
+    import * as items from '../../data/items/';
+    console.log(items)
 
 	export let out = { displayname: '' };
 	export let out2 = [];
@@ -153,17 +155,18 @@
 					const file = internalFiles[i]; // get file name (should look like ITEM_ID.png)
 
 					let internalName = file.name.split('.')[0].toUpperCase(); // get internal name (file name without extension and capitalized)
-						try { // Pull data from NotEnoughUpdates repo (https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO)
-							getJSON(
-								`https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/${internalName}.json`
-							).then((result) => {
-								if (!processData(result, internalName)) {
-                                    failed.push(internalName);
-                                } // Pass internal name and JSON data to processData()
-							});
-						} catch (error) { // Failed to find json file -> Either it doesn't exist or the request was closed (further processing necessary)
-							errorWindow(`Error: ${error}`); // Show error window
-						}
+                    try { // Pull data from NotEnoughUpdates repo (https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO)
+                        getJSON(
+                            `../../items/${internalName}.json`
+                            //`https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/${internalName}.json`
+                        ).then((result) => {
+                            if (!processData(result, internalName)) {
+                                failed.push(internalName);
+                            } // Pass internal name and JSON data to processData()
+                        });
+                    } catch (error) { // Failed to find json file -> Either it doesn't exist or the request was closed (further processing necessary)
+                        errorWindow(`Error: ${error}`); // Show error window
+                    }
 				}
                 errorWindow(`Failed to find the following files: #code${failed.join(', ')}/code`);
 			}}

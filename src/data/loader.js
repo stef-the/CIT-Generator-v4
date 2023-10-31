@@ -1,5 +1,8 @@
 import * as fs from "fs";
 
+/**
+ * @param {string} input
+ */
 function displayRename(input) {
     let output = "";
     ("§a" + input).split("§").forEach((part) => {
@@ -8,7 +11,7 @@ function displayRename(input) {
     return output;
 }
 
-const RAWitems = fs.readdirSync("NotEnoughUpdates-REPO/items");
+const RAWitems = fs.readdirSync("/items");
 let items = [];
 let duplicates = [];
 let data = [];
