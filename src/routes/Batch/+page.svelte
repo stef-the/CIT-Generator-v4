@@ -106,7 +106,7 @@
 	// TODO : CHECK IF RESULT IS JSON OR TEXT
 	function processData(result, internalName) {
 
-		let re = `\nitems=${result.itemid}\ntexture=${internalName}.png`;
+		let re = `\nitems=${result.itemid}\ntexture=${internalName}.png\n`;
 		if (preferredMethod === 0) {
 			re += `nbt.ExtraAttributes.id=${internalName}`;
 		} else if (preferredMethod === 1) {
@@ -137,8 +137,6 @@
 	<a class="linkto" href="/">Item CIT Generator</a>
 </h1>
 <div class="linebreak" />
-
-<label for="file">Upload your file(s)</label>
 
 <!-- File select button -->
 <input type="file" id="file" name="fileToUpload" multiple />
@@ -171,8 +169,6 @@
 			}}
 		/>
 	</div>
-	<div class="linebreak" />
-	<div class="linebreak" />
 	<div class="labelgroup submit hidden" id="downloadcontainer">
 		<input
 			class="submit hidden"
