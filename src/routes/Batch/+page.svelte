@@ -6,7 +6,7 @@
 
 	let selectedfiles = 0;
 
-	const preferredMethod = 0;
+	let preferredMethod = 0;
 	/*
 	0 = ID
 	1 = ipattern
@@ -143,6 +143,20 @@
 
 <!-- Submit form -->
 <form autocomplete="off" class="main">
+	<div class="labelgroup submit">
+		<input
+			id="method"
+			class="submit"
+			type="button"
+			value="Using method: {preferredMethod === 0 ? 'internal ID' : 'ipattern'}"
+			on:click={() => {
+				preferredMethod += 1;
+				if (preferredMethod > 1) {
+					preferredMethod = 0;
+				}
+			}}
+		/>
+	</div>
 	<div class="labelgroup submit inputs">
 		<input
 			type="file"
@@ -151,10 +165,10 @@
 			multiple
 			on:change={() => {
 				selectedfiles = document.getElementById('file').files.length;
-				console.log(selectedfiles)
+				console.log(selectedfiles);
 			}}
 		/>
-		<input id="fakefile" class="" value="Select Files ({selectedfiles} selected)" />
+		<input id="fakefile" value="Select Files ({selectedfiles} selected)" />
 	</div>
 	<div class="labelgroup submit">
 		<!-- Submit button -->
