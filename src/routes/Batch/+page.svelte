@@ -2,12 +2,17 @@
 	// @ts-nocheck
 	import { exclude_internal_props } from 'svelte/internal';
 	import duplicates from '../../data/duplicates.json';
-    import * as items from '../../data/items/';
-    console.log(items)
+	import items from '../../data/items.json';
 
-	export let out = { displayname: '' };
-	export let out2 = [];
-	export const exclusions = [];
+	const preferredMethod = 0;
+	/*
+	0 = ID
+	1 = ipattern
+	*/
+
+	let out = {};
+	let out2 = [];
+	const exclusions = [];
 	export const inputs = [
 		{
 			name: 'iname',
@@ -72,7 +77,7 @@
 		const response = await fetch(input, {
 			method: 'GET'
 		});
-        
+
 		if (response.ok) {
 			return response.json();
 		} else {
@@ -82,12 +87,12 @@
 
 	// Open an error window on screen
 	function errorWindow(error) {
-		const a = error.replace('#code', '<span class="code">').replace('/code', '</span>');
+		const htmlPart = error.replace('#code', '<span class="code">').replace('/code', '</span>');
 		document.getElementById('alert').classList.remove('hidden');
 		document.getElementById('alertbox').classList.remove('hidden');
 		document.getElementById(
 			'spancontainer'
-		).innerHTML = `<span>${a}</span><div style="padding: 1rem;"></div>`;
+		).innerHTML = `<span>${htmlPart}</span><div style="padding: 1rem;"></div>`;
 	}
 
 	// Hide error window on screen
@@ -100,20 +105,19 @@
 	// Process data from NEU repository, using JSON and internal name
 	// TODO : CHECK IF RESULT IS JSON OR TEXT
 	function processData(result, internalName) {
-		let re;
 
-		if (displayRename(result.displayname) in duplicates.data) {
-			// if the item is excluded from standard CIT
-			re = `type=item\nitems=${result.itemid}\nnbt.ExtraAttributes.id=${
-				document.getElementById('iname').value
-			}`;
-		} else {
-			// if the item is included in standard CIT
-			re = `type=item\nitems=${result.itemid}\nnbt.display.Name=ipattern:*${displayRename(
-				result.displayname
-			)}*`;
+		let re = `\nitems=${result.itemid}\ntexture=${internalName}.png`;
+		if (preferredMethod === 0) {
+			re += `nbt.ExtraAttributes.id=${internalName}`;
+		} else if (preferredMethod === 1) {
+			if (displayRename(result.displayname) in duplicates.data) {
+				// if the item is excluded from standard CIT
+				re = `nbt.ExtraAttributes.id=${internalName}`;
+			} else {
+				// if the item is included in standard CIT
+				re = `nbt.display.Name=ipattern:*${displayRename(result.displayname)}*`;
+			}
 		}
-		re += `\ntexture=${internalName}`;
 
 		out2.push({
 			// output for file editor / download
@@ -149,26 +153,21 @@
 			value="Submit"
 			on:click={function () {
 				let internalFiles = document.getElementById('file').files; // Take files from #file
-                let failed = [];
+				let failed = [];
 
-				for (let i = 0; i < internalFiles.length; i++) { // Iter through each file
+				for (let i = 0; i < internalFiles.length; i++) {
+					// Iter through each file
 					const file = internalFiles[i]; // get file name (should look like ITEM_ID.png)
 
 					let internalName = file.name.split('.')[0].toUpperCase(); // get internal name (file name without extension and capitalized)
-                    try { // Pull data from NotEnoughUpdates repo (https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO)
-                        getJSON(
-                            `../../items/${internalName}.json`
-                            //`https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/${internalName}.json`
-                        ).then((result) => {
-                            if (!processData(result, internalName)) {
-                                failed.push(internalName);
-                            } // Pass internal name and JSON data to processData()
-                        });
-                    } catch (error) { // Failed to find json file -> Either it doesn't exist or the request was closed (further processing necessary)
-                        errorWindow(`Error: ${error}`); // Show error window
-                    }
+					try {
+						processData(items[internalName], internalName);
+					} catch (error) {
+						failed.push(internalName);
+						console.error(error); // Failed to find json file -> it doesn't exist
+						errorWindow(`Error: #code${error}/code<br>Texture: ${internalName}`); // Show error window
+					}
 				}
-                errorWindow(`Failed to find the following files: #code${failed.join(', ')}/code`);
 			}}
 		/>
 	</div>
@@ -190,18 +189,19 @@
 		/>
 	</div>
 </form>
-<div id="alert" class="hidden" on:click={() => hideErrorWindow()}>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+	id="alert"
+	class="hidden"
+	on:click={() => hideErrorWindow()}
+	on:keydown={(e) => {
+		if (e.key === 'Enter') {
+			hideErrorWindow();
+		}
+	}}
+>
 	<div id="alertbox" class="hidden">
 		<div id="spancontainer" />
-		<input
-			class="enter"
-			id="ok"
-			type="button"
-			name="ok"
-			value="OK"
-			on:click={() => {
-				console.log('hello!');
-			}}
-		/>
+		<input class="enter" id="ok" type="button" name="ok" value="OK" />
 	</div>
 </div>
