@@ -46,3 +46,6 @@ internal_names = [x.split(".")[0] for x in files]
 import_set = set()
 for i in internal_names:
     import_set.add(i)
+
+with open("src/data/index.js", "w") as outfile:
+    outfile.write(f'import f{import_set} from "./items/"')
