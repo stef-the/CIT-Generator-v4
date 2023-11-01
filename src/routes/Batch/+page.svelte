@@ -4,6 +4,8 @@
 	import duplicates from '../../data/duplicates.json';
 	import items from '../../data/items.json';
 
+	let selectedfiles = 0;
+
 	const preferredMethod = 0;
 	/*
 	0 = ID
@@ -142,8 +144,17 @@
 <!-- Submit form -->
 <form autocomplete="off" class="main">
 	<div class="labelgroup submit inputs">
-		<input type="file" id="file" name="fileToUpload" multiple />
-		<input id="fakefile" class="" value="Select Files" />
+		<input
+			type="file"
+			id="file"
+			name="fileToUpload"
+			multiple
+			on:change={() => {
+				selectedfiles = document.getElementById('file').files.length;
+				console.log(selectedfiles)
+			}}
+		/>
+		<input id="fakefile" class="" value="Select Files ({selectedfiles} selected)" />
 	</div>
 	<div class="labelgroup submit">
 		<!-- Submit button -->
