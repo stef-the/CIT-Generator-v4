@@ -105,7 +105,6 @@
 	// Process data from NEU repository, using JSON and internal name
 	// TODO : CHECK IF RESULT IS JSON OR TEXT
 	function processData(result, internalName) {
-
 		let re = `\nitems=${result.itemid}\ntexture=${internalName}.png\n`;
 		if (preferredMethod === 0) {
 			re += `nbt.ExtraAttributes.id=${internalName}`;
@@ -139,9 +138,13 @@
 <div class="linebreak" />
 
 <!-- File select button -->
-<input type="file" id="file" name="fileToUpload" multiple />
+
 <!-- Submit form -->
 <form autocomplete="off" class="main">
+	<div class="labelgroup submit inputs">
+		<input type="file" id="file" name="fileToUpload" multiple />
+		<input id="fakefile" class="" value="Select Files" />
+	</div>
 	<div class="labelgroup submit">
 		<!-- Submit button -->
 		<input
